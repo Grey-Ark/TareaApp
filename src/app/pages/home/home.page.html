@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Inicio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list *ngIf="tareas.length > 0; else noTareas">
+    <ion-item *ngFor="let tarea of tareas" [routerLink]="['/detalle-tarea', tarea.id]">
+      <ion-label>
+        <h2>{{ tarea.titulo }}</h2>
+        <p>{{ tarea.descripcion }}</p>
+        <p><strong>Vence:</strong> {{ tarea.fecha }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #noTareas>
+    <ion-text color="medium">No hay tareas registradas.</ion-text>
+  </ng-template>
+
+  
+  <div class="btn-crear-tarea-container">
+    <ion-button expand="block" shape="round" size="large" [routerLink]="['/crear-tarea']">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Nueva Tarea
+    </ion-button>
+  </div>
+
+    <!-- ESPACIO EXTRA -->
+  <div style="height: 50px;"></div>
+</ion-content>
