@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { TareaService, Tarea } from '../../services/tarea.service';
 
 @Component({
   standalone: true,
@@ -19,7 +20,8 @@ export class DetalleTareaPage implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private router: Router,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private tareaService: TareaService
   ) {
     this.tareaForm = this.fb.group({
       titulo: ['', Validators.required],
@@ -30,16 +32,19 @@ export class DetalleTareaPage implements OnInit {
 
   ngOnInit() {
     this.tareaId = Number(this.route.snapshot.paramMap.get('id'));
-    const tareas = JSON.parse(localStorage.getItem('tareas') || '[]');
-    const tarea = tareas.find((t: any) => t.id === this.tareaId);
+    const tarea = this.tareaService.getTareaPorId(this.tareaId);
 
-    if (tarea) {
-      this.tareaForm.setValue({
-        titulo: tarea.titulo,
-        descripcion: tarea.descripcion,
-        fecha: tarea.fecha,
-      });
+    if (!tarea) {
+      // Manejar tarea no encontrada
+      this.router.navigate(['/home']);
+      return;
     }
+
+    this.tareaForm = this.fb.group({
+      titulo: [tarea.titulo, Validators.required],
+      descripcion: [tarea.descripcion, Validators.required],
+      fecha: [tarea.fecha, Validators.required],
+    });
   }
 
   async guardarCambios() {
@@ -53,21 +58,16 @@ export class DetalleTareaPage implements OnInit {
       return;
     }
 
-    const tareas = JSON.parse(localStorage.getItem('tareas') || '[]');
-    const index = tareas.findIndex((t: any) => t.id === this.tareaId);
+    const tareaActualizada = this.tareaForm.value;
+    this.tareaService.actualizarTarea(this.tareaId, tareaActualizada);
 
-    if (index > -1) {
-      tareas[index] = { id: this.tareaId, ...this.tareaForm.value };
-      localStorage.setItem('tareas', JSON.stringify(tareas));
+    const alert = await this.alertCtrl.create({
+      header: 'Éxito',
+      message: 'Tarea actualizada correctamente.',
+      buttons: ['OK'],
+    });
+    await alert.present();
 
-      const alert = await this.alertCtrl.create({
-        header: 'Éxito',
-        message: 'Tarea actualizada correctamente.',
-        buttons: ['OK'],
-      });
-      await alert.present();
-
-      this.router.navigate(['/home']);
-    }
+    this.router.navigate(['/home']);
   }
 }

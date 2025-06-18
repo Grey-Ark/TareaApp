@@ -3,19 +3,24 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { addOutline } from 'ionicons/icons';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonList, IonItem, IonLabel, IonText, IonFab, IonIcon } from '@ionic/angular/standalone';
+import { addOutline, createOutline, trashOutline } from 'ionicons/icons';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonList, IonItem, IonLabel, IonText, IonFab, IonIcon, IonButton } from '@ionic/angular/standalone';
+import { TareaService} from '../../services/tarea.service'
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [IonIcon, IonFab, IonText, IonLabel, IonItem, IonList, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, RouterModule]
+  imports: [IonButton, IonIcon, IonFab, IonText, IonLabel, IonItem, IonList, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, RouterModule]
 })
 export class HomePage implements OnInit {
 
    tareas: any[] = [];
+ 
+  constructor(private tareaService: TareaService) { 
+    addIcons({createOutline,trashOutline,addOutline}); 
+  }
 
   ngOnInit() {
     this.cargarTareas();
@@ -26,13 +31,17 @@ export class HomePage implements OnInit {
   }
 
   cargarTareas() {
-    const data = localStorage.getItem('tareas');
-    this.tareas = data ? JSON.parse(data) : [];
+    this.tareas = this.tareaService.getTareas();
   }
-  
-  constructor() { 
-    addIcons({addOutline}); 
+
+  eliminarTarea(id: number) {
+    const confirm = window.confirm('¿Estás seguro de eliminar esta tarea?');
+    if (confirm) {
+      this.tareaService.eliminarTarea(id);
+      this.cargarTareas();
+    }
   }
+
 
 
 }

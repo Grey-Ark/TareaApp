@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>Detalle de Tarea</ion-title>
+    <ion-title>Editar Tarea</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -24,8 +24,6 @@
       <ion-datetime presentation="date" formControlName="fecha"></ion-datetime>
     </ion-item>
 
-    <ion-button expand="block" type="submit" [disabled]="tareaForm.invalid">
-      Guardar Cambios
-    </ion-button>
+    <ion-button expand="block" type="submit" [disabled]="tareaForm.invalid">Guardar Cambios</ion-button>
   </form>
 </ion-content>
